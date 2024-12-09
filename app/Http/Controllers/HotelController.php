@@ -12,7 +12,8 @@ class HotelController extends Controller
      */
     public function index()
     {
-        //
+        $hotels= hotel::all();
+        return view('hotels.index',compact('hotels'));
     }
 
     /**
@@ -28,7 +29,23 @@ class HotelController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'nom'=>'required',
+            'adresse'=>'required',
+            'etoil'=>'required',
+            'prix'=>'required',
+            'ville_id' => 'required|exists:villes,id',
+    
+            
+    
+    
+           ]);
+           
+           Hotel::create($request->all());
+    
+           
+           return redirect()->route('hotels.index')->with('success', 'hotel enregistré avec succès');
+    
     }
 
     /**
@@ -36,7 +53,8 @@ class HotelController extends Controller
      */
     public function show(Hotel $hotel)
     {
-        //
+        return view('hotels.detail',compact('hotel'));
+        
     }
 
     /**
@@ -44,7 +62,10 @@ class HotelController extends Controller
      */
     public function edit(Hotel $hotel)
     {
-        //
+        
+        $villes = Ville::all(); // Pour permettre la sélection des villes de départ et d'arrivée
+
+        return view('hotels.edit',compact('hotel', 'villes'));
     }
 
     /**
@@ -52,7 +73,23 @@ class HotelController extends Controller
      */
     public function update(Request $request, Hotel $hotel)
     {
-        //
+        $request->validate([
+            'nom'=>'required',
+            'adresse'=>'required',
+            'etoil'=>'required',
+            'prix'=>'required',
+            'ville_id' => 'required|exists:villes,id',
+    
+            
+    
+    
+           ]);
+           
+           $hotel->update($request->all());
+    
+           
+           return redirect()->route('hotels.index')->with('success', 'hotel modifié avec succès');
+    
     }
 
     /**
@@ -60,6 +97,7 @@ class HotelController extends Controller
      */
     public function destroy(Hotel $hotel)
     {
-        //
+        $hotel->delete(); 
+        return redirect()->route('hotels.index');
     }
 }

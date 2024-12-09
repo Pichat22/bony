@@ -1,7 +1,9 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HotelController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReservationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,17 +18,17 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Gestion des reservations
-    Route::get('/reservation', function () {
-        return view('reservations.form'); // Charge la vue du formulaire.
-    });
-    
 
-// Route pour rediriger vers le formulaire de contact
-Route::post('/reservation', function () {
-    // Traitement des données du formulaire
-    return back()->with('success', 'Votre message a bien été envoyé!');
-});
+    
+    // Recherche et gestion des réservations
+    Route::resource('reservations', ReservationController::class);
+    Route::post('reservations/search', [ReservationController::class, 'search'])->name('reservations.search');
+    
+    Route::get('/user_reservation', [ReservationController::class, 'ReservationByUser'])->name('reservations.user');
+    Route::get('reservations/{id}/download', [ReservationController::class, 'downloadPDF'])->name('reservations.download');
+    Route::post('/reservations/hotel', [ReservationController::class, 'storeHotel'])->name('reservations.hotel.store');
+
+    Route::resource('hotels', HotelController::class);
 
 });
 

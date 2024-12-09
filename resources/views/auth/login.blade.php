@@ -7,7 +7,7 @@
         @csrf
         <div class="d-flex justify-content-start mb-4 ms-4" style="background-color: #333333; padding: 10px; border-radius: 8px;">
             <a href="/">
-                <img src="{{asset('image/logo-removebg-preview.png')}}" width="150" alt="">
+                <img src="{{asset('image/logo-removebg-preview.png')}}" width="140" alt="">
             </a>
         </div>
         
