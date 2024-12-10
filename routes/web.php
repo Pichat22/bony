@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/user_reservation', [ReservationController::class, 'ReservationByUser'])->name('reservations.user');
     Route::get('reservations/{id}/download', [ReservationController::class, 'downloadPDF'])->name('reservations.download');
     Route::post('/reservations/hotel', [ReservationController::class, 'storeHotel'])->name('reservations.hotel.store');
+    
 
     Route::resource('hotels', HotelController::class);
 

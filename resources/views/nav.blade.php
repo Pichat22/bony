@@ -21,10 +21,10 @@
           <a class="nav-link active text-warning" aria-current="page" href="#">Accueil</a>
         </li>
         <li class="nav-item mr-3">
-          <a class="nav-link active text-warning" href="/reservation">Reservation</a>
+          <a class="nav-link active text-warning" href="{{route('reservations.index')}}">Reservation</a>
         </li>
         <li class="nav-item mr-3">
-          <a class="nav-link active text-warning" href="#">Hotel</a>
+          <a class="nav-link active text-warning" href="{{route('hotels.index')}}">Hotel</a>
         </li>
         <li class="nav-item mr-3">
           <a class="nav-link active text-warning " href="#" aria-disabled="true">Contactez-nous</a>

@@ -17,15 +17,11 @@
       
     <form method='Post' action="{{route('hotels.store')}}">
     @csrf
-    <div class="form-group">
-                    <label for="ville_depart_id">Ville</label>
-                    <select name="ville_id" id="ville_id" class="form-control" required>
-                        <option value="" disabled selected>Choisissez une ville</option>
-                        @foreach($villes as $ville)
-                            <option value="{{ $ville->id }}">{{ $ville->nom }} ({{ $ville->pays }})</option>
-                        @endforeach
-                    </select>
-                </div>
+   <div class="mb-3">
+    <label for="ville" class="form-label">Ville</label>
+    <input type="text" class="form-control" id="ville"name="ville">
+  </div>
+
     <div class="mb-3">
     <label for="exampleInputPassword1" class="form-label">Nom</label>
     <input type="text" class="form-control" id="exampleInputPassword1"name="nom">

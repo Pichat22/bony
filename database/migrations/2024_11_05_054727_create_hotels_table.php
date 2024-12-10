@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('adresse');
             $table->integer('etoil');
             $table->decimal('prix',8,2);
+            $table->string('ville');
             $table->timestamps();
         });
     }

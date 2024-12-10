@@ -21,7 +21,10 @@ class HotelController extends Controller
      */
     public function create()
     {
-        //
+        // $villes = Ville::all(); // Pour permettre la sélection des villes de départ et d'arrivée
+
+        return view('hotels.form');
+        
     }
 
     /**
@@ -34,7 +37,7 @@ class HotelController extends Controller
             'adresse'=>'required',
             'etoil'=>'required',
             'prix'=>'required',
-            'ville_id' => 'required|exists:villes,id',
+            'ville' => 'required',
     
             
     
@@ -63,9 +66,9 @@ class HotelController extends Controller
     public function edit(Hotel $hotel)
     {
         
-        $villes = Ville::all(); // Pour permettre la sélection des villes de départ et d'arrivée
+        // $villes = Ville::all(); // Pour permettre la sélection des villes de départ et d'arrivée
 
-        return view('hotels.edit',compact('hotel', 'villes'));
+        return view('hotels.edit',compact('hotel'));
     }
 
     /**
@@ -78,7 +81,7 @@ class HotelController extends Controller
             'adresse'=>'required',
             'etoil'=>'required',
             'prix'=>'required',
-            'ville_id' => 'required|exists:villes,id',
+            'ville' => 'required',
     
             
     
@@ -100,4 +103,12 @@ class HotelController extends Controller
         $hotel->delete(); 
         return redirect()->route('hotels.index');
     }
+   
+    
+//     public function searchForm()
+//     {
+//         $villes = Ville::all();
+    
+//         return view('hotels.search', compact('villes'));
+// }
 }
