@@ -6,10 +6,11 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReservationController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
+    $user=Auth::user();
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -21,12 +22,13 @@ Route::middleware('auth')->group(function () {
 
     
     // Recherche et gestion des réservations
+
     Route::resource('reservations', ReservationController::class);
-    Route::post('reservations/search', [ReservationController::class, 'search'])->name('reservations.search');
+    // Route::post('reservations/search', [ReservationController::class, 'search'])->name('reservations.search');
     
-    Route::get('/user_reservation', [ReservationController::class, 'ReservationByUser'])->name('reservations.user');
-    Route::get('reservations/{id}/download', [ReservationController::class, 'downloadPDF'])->name('reservations.download');
-    Route::post('/reservations/hotel', [ReservationController::class, 'storeHotel'])->name('reservations.hotel.store');
+    // Route::get('/user_reservation', [ReservationController::class, 'ReservationByUser'])->name('reservations.user');
+    // Route::get('reservations/{id}/download', [ReservationController::class, 'downloadPDF'])->name('reservations.download');
+    // Route::post('/reservations/hotel', [ReservationController::class, 'storeHotel'])->name('reservations.hotel.store');
     
 
     Route::resource('hotels', HotelController::class);

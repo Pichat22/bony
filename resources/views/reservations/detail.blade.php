@@ -8,7 +8,7 @@
         <p>date :{{$reservation->date}}</p>
         <p>statut :{{$reservation->statut}}</p>
         <p>classe :{{$reservation->classe}}</p>
-        <p>vol :{{$reservation->vol->matricule}}</p>
+        
         <p>date d'ajout :{{$reservation->created_at}}</p>
         <p>date de modification :{{$reservation->updated_at}}</p>
 

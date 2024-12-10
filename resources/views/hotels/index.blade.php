@@ -34,7 +34,7 @@
                     <td>{{ $hotel->adresse }}</td>
                     <td>{{ $hotel->etoil }}</td>
                     <td>{{ $hotel->prix }}</td>
-                    <td>{{ $hotel->ville->nom }}</td>
+                    <td>{{ $hotel->ville }}</td>
 
                     <td class="d-flex">
         <a href="{{route('hotels.show',$hotel->id)}}" class="btn btn-success m-1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">

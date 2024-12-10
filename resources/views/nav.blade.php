@@ -32,7 +32,7 @@
       </ul>
 
       @Auth
-      <span class="text-white " style="margin-righ:2%">
+      <span class="text-white " style="margin-right:2%">
       {{Auth::user()->nom}}
       </span>
       @endAuth

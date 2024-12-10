@@ -20,7 +20,7 @@
     @method('PUT')
     <div class="mb-3">
     <label for="ville" class="form-label">Ville</label>
-    <input type="text" class="form-control" id="ville"name="ville">
+    <input type="text" class="form-control" value="{{$hotel->ville}}" id="ville"name="ville">
   </div>
     <div class="mb-3">
     <label for="exampleInputPassword1" class="form-label">Nom</label>

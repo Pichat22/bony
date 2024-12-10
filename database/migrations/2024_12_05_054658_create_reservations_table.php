@@ -16,7 +16,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('statut')->default('en attente');
             $table->string('classe')->nullable;
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('hotel_id')->nullable();
             $table->timestamps();
 
