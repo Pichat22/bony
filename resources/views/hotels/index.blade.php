@@ -2,17 +2,18 @@
 
 @section('content')
 <div class="card mt-3 hadow-lg p-3 mb-5 rounded" style="margin-left:-8%;">
+@if(session()->has('message'))
+        <div class="alert alert-success">
+            {{ session()->get('message') }}
+        </div>
+    @endif
     <div class="card-header bg-warning">
         <h1 class="text-center text-white">Liste des Hotels</h1>
     </div>
     <div class="card-body">
 <a href="{{route('hotels.create')}}" class="btn btn-warning">Ajout</a>
 
-    @if(session()->has('message'))
-        <div class="alert alert-success">
-            {{ session()->get('message') }}
-        </div>
-    @endif
+
 
     <table class="table">
         <thead>

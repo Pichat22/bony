@@ -2,8 +2,8 @@
 @section('content')
 <div class="container mt-5">
     <div class="card">
-        <div class="card-header bg-warning text-white">
-            <h3>Détail Hôtel N° {{$hotel->id}}</h3>
+        <div class="card-header bg-warning">
+            <h3 class="text-center text-white">Détail Hôtel N° {{$hotel->id}}</h3>
         </div>
         <div class="card-body">
             <p><strong>Nom :</strong> {{$hotel->nom}}</p>
