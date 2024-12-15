@@ -6,6 +6,8 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
+
 class AmadeusService
 {
     protected $client;
@@ -35,11 +37,11 @@ class AmadeusService
     public function searchCities($query)
     {
         $token = $this->getAccessToken();
-
+    
         if (!$token) {
             return ['error' => 'Unable to fetch access token'];
         }
-
+    
         try {
             $response = $this->client->get('/v1/reference-data/locations', [
                 'headers' => [
@@ -47,15 +49,16 @@ class AmadeusService
                 ],
                 'query' => [
                     'keyword' => $query,
-                    'subType' => 'CITY,AIRPORT', // Recherche des villes et aéroports
+                    'subType' => 'CITY', // Recherche uniquement des villes
                 ],
             ]);
-
+    
             return json_decode($response->getBody()->getContents(), true);
         } catch (\Exception $e) {
             return ['error' => $e->getMessage()];
         }
     }
+    
 
     public function searchFlights($origin, $destination, $departureDate)
 {
@@ -85,19 +88,67 @@ class AmadeusService
 }
 public function getCityFromIata($iataCode)
 {
-    // Appel API pour obtenir les détails de l'aéroport
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer ' . $this->getAccessToken(),
-    ])->get('https://test.api.amadeus.com/v1/reference-data/locations', [
-        'keyword' => $iataCode,
-        'subType' => 'AIRPORT',
-    ]);
+    // Utiliser le cache si le résultat est déjà disponible
+    return Cache::remember("city_name_{$iataCode}", 3600, function () use ($iataCode) {
+        $token = $this->getAccessToken();
 
-    if ($response->ok() && !empty($response['data'])) {
-        return $response['data'][0]['address']['cityName'] ?? $iataCode; // Retourne le nom de la ville
-    }
+        if (!$token) {
+            return $iataCode;
+        }
 
-    return $iataCode; // Retourne le code si la ville n'est pas trouvée
+        try {
+            $response = Http::withOptions([
+                'verify' => false,
+                'timeout' => 10, // Timeout de 10 secondes
+            ])->withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+            ])->get('https://test.api.amadeus.com/v1/reference-data/locations', [
+                'keyword' => $iataCode,
+                'subType' => 'AIRPORT',
+            ]);
+
+            if ($response->ok() && !empty($response['data'])) {
+                return $response['data'][0]['address']['cityName'] ?? $iataCode;
+            }
+
+        } catch (\Exception $e) {
+            return $iataCode; // Retourner le code si l'API échoue
+        }
+
+        return $iataCode;
+    });
+}
+
+public function getAirlineName($airlineCode)
+{
+    // Utiliser le cache pour éviter les appels multiples
+    return Cache::remember("airline_name_{$airlineCode}", 3600, function () use ($airlineCode) {
+        $token = $this->getAccessToken();
+
+        if (!$token) {
+            return $airlineCode; // Retourne le code si le token échoue
+        }
+
+        try {
+            $response = Http::withOptions([
+                'verify' => false,
+                'timeout' => 10, // Timeout pour la requête
+            ])->withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+            ])->get('https://test.api.amadeus.com/v1/reference-data/airlines', [
+                'airlineCodes' => $airlineCode,
+            ]);
+
+            if ($response->ok() && !empty($response['data'])) {
+                return $response['data'][0]['businessName'] ?? $airlineCode; // Retourne le nom de la compagnie
+            }
+
+        } catch (\Exception $e) {
+            return $airlineCode; // Retourne le code si l'API échoue
+        }
+
+        return $airlineCode;
+    });
 }
 
 }

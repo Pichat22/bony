@@ -54,22 +54,22 @@
       
       let debounceTimeout; // Déclarez la variable en dehors de la fonction
 
-function fetchSuggestions(query, field) {
+      function fetchSuggestions(query, field) {
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(() => {
-        if (query.length < 2) return; // Limite à au moins 2 caractères
+        if (query.length < 2) return; // Minimum 2 caractères
         fetch(`/api/search-cities?query=${query}`)
             .then(response => response.json())
             .then(data => {
                 const list = document.getElementById(`${field}_suggestions`);
-                list.innerHTML = ''; // Vide les anciennes suggestions
+                list.innerHTML = ''; // Efface les anciennes suggestions
                 data.data.forEach(location => {
                     const li = document.createElement('li');
                     li.classList.add('list-group-item');
-                    li.textContent = `${location.name} (${location.iataCode})`;
+                    li.textContent = location.name; // Affiche le nom de la ville
                     li.addEventListener('click', () => {
-                        document.getElementById(field).value = location.name;
-                        document.getElementById(`${field}_code`).value = location.iataCode;
+                        document.getElementById(field).value = location.name; // Remplit le champ avec le nom
+                        document.getElementById(`${field}_code`).value = location.iataCode; // Remplit le champ caché avec le code
                         list.innerHTML = ''; // Efface les suggestions après sélection
                     });
                     list.appendChild(li);
@@ -78,6 +78,7 @@ function fetchSuggestions(query, field) {
             .catch(console.error);
     }, 300); // Ajoute un délai de 300ms
 }
+
 
 document.getElementById('ville_depart').addEventListener('input', function () {
     fetchSuggestions(this.value, 'ville_depart');

@@ -20,7 +20,7 @@
                 @foreach ($flight['itineraries'] as $itinerary)
                     @foreach ($itinerary['segments'] as $segment)
                         <tr>
-                            <td>{{ $flight['validatingAirlineCodes'][0] ?? 'N/A' }}</td>
+                            <td>{{ $flight['airlineName'] ?? $flight['validatingAirlineCodes'][0] }}</td>
                             <td>{{ $segment['departure']['cityName'] ?? $segment['departure']['iataCode'] }}</td>
                             <td>{{ $segment['arrival']['cityName'] ?? $segment['arrival']['iataCode'] }}</td>
                             <td>{{ \Carbon\Carbon::parse($segment['departure']['at'])->format('d/m/Y H:i') }}</td>
@@ -32,6 +32,8 @@
             @endforeach
         </tbody>
     </table>
+    
+    
     
     @else
         <p>Aucun vol disponible.</p>

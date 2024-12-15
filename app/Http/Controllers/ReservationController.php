@@ -158,56 +158,39 @@ class ReservationController extends Controller
         return response()->json(['error' => 'Erreur serveur : ' . $e->getMessage()], 500);
     }
 }
-public function getCityFromIata($iataCode)
-{
-    // Appel API pour obtenir les détails de l'aéroport
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer ' . $this->getAccessToken(),
-    ])->get('https://test.api.amadeus.com/v1/reference-data/locations', [
-        'keyword' => $iataCode,
-        'subType' => 'AIRPORT',
-    ]);
 
-    if ($response->ok() && !empty($response['data'])) {
-        return $response['data'][0]['address']['cityName'] ?? $iataCode; // Retourne le nom de la ville
-    }
-
-    return $iataCode; // Retourne le code si la ville n'est pas trouvée
-}
 
 public function search(Request $request, AmadeusService $amadeusService)
 {
-    // Validation des champs
-    $request->validate([
-        'ville_depart' => 'required|string',
-        'ville_arrivee' => 'required|string|different:ville_depart',
-        'date_depart' => 'required|date',
-    ]);
-
-    // Récupération des codes IATA pour les villes
-    $villeDepart = $amadeusService->searchCities($request->input('ville_depart'));
-    $villeArrivee = $amadeusService->searchCities($request->input('ville_arrivee'));
-
-    if (empty($villeDepart['data']) || empty($villeArrivee['data'])) {
-        return back()->with('error', 'Impossible de trouver les codes IATA pour les villes sélectionnées.');
-    }
-
-    // Récupérer le premier code IATA de chaque ville
-    $codeDepart = $villeDepart['data'][0]['iataCode'];
-    $codeArrivee = $villeArrivee['data'][0]['iataCode'];
-
-    // Recherche des vols avec les codes IATA
     $flights = $amadeusService->searchFlights(
-        $codeDepart,
-        $codeArrivee,
+        $request->input('ville_depart'),
+        $request->input('ville_arrivee'),
         $request->input('date_depart')
     );
 
-    if (empty($flights['data'])) {
-        return back()->with('error', 'Aucun vol disponible pour les critères sélectionnés.');
+    if (!empty($flights['data'])) {
+        foreach ($flights['data'] as &$flight) {
+            $airlineCode = $flight['validatingAirlineCodes'][0] ?? null;
+
+            if ($airlineCode) {
+                // Convertir le code IATA en nom complet
+                $flight['airlineName'] = $amadeusService->getAirlineName($airlineCode);
+            }
+
+            foreach ($flight['itineraries'] as &$itinerary) {
+                foreach ($itinerary['segments'] as &$segment) {
+                    $segment['departure']['cityName'] = $amadeusService->getCityFromIata($segment['departure']['iataCode']);
+                    $segment['arrival']['cityName'] = $amadeusService->getCityFromIata($segment['arrival']['iataCode']);
+                }
+            }
+        }
     }
 
     return view('flights.voldispo', compact('flights'));
 }
+
+
+
+
 
 }
