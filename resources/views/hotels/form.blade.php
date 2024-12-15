@@ -1,11 +1,7 @@
 @extends('layouts.app')
 @section('content')
     <div class="card mt-3 hadow-lg p-3 mb-5 rounded" style="margin-left:-8%;">
-      <div class="card-header bg-warning">
-      <h1 class="text-center text-white">Ajouter un hotel</h1>
-      </div>
-      <div class="card-body">
-      @if($errors->any())
+    @if($errors->any())
       <div class="alert alert-danger">
       <ul>
         @foreach($errors->all() as $error)
@@ -14,6 +10,11 @@
       </ul>
       </div>
       @endif
+      <div class="card-header bg-warning">
+      <h1 class="text-center text-white">Ajouter un hotel</h1>
+      </div>
+      <div class="card-body">
+      
       
     <form method='Post' action="{{route('hotels.store')}}">
     @csrf

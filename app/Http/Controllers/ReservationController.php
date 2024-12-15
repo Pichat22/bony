@@ -49,7 +49,7 @@ class ReservationController extends Controller
             'classe' => $request->classe,
         ]);
     
-        return redirect()->route('reservations.index')->with('success', 'Réservations créées avec succès.');
+        return redirect()->route('reservations.index')->with('message', 'Réservations créées avec succès.');
     }
 
     /**
@@ -97,7 +97,7 @@ class ReservationController extends Controller
             'classe' => $request->classe,
         ]);
     
-        return redirect()->route('reservations.index')->with('success', 'Réservations modifiées avec succès.');
+        return redirect()->route('reservations.index')->with('message', 'Réservations modifiées avec succès.');
     }
 
     /**

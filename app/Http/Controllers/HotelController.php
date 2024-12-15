@@ -47,7 +47,7 @@ class HotelController extends Controller
            Hotel::create($request->all());
     
            
-           return redirect()->route('hotels.index')->with('success', 'hotel enregistré avec succès');
+           return redirect()->route('hotels.index')->with('message', 'hotel enregistré avec succès');
     
     }
 
@@ -91,7 +91,7 @@ class HotelController extends Controller
            $hotel->update($request->all());
     
            
-           return redirect()->route('hotels.index')->with('success', 'hotel modifié avec succès');
+           return redirect()->route('hotels.index')->with('message', 'hotel modifié avec succès');
     
     }
 
