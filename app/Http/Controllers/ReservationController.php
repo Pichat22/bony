@@ -2,24 +2,23 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\Reservation;
+
+use Illuminate\Support\Facades\Auth;
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Services\AmadeusService;
-use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Http\Request;
 class ReservationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    // public function index()
-    
-        // $reservations= Reservation::all();
-        // return view('reservations.index');
-    
+    public function index()
+    {
+        $reservations= Reservation::all();
+        return view('reservations.index',compact('reservations'));
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -49,7 +48,7 @@ class ReservationController extends Controller
             'classe' => $request->classe,
         ]);
     
-        return redirect()->route('reservations.index')->with('message', 'Réservations créées avec succès.');
+        return redirect()->route('reservations.index')->with('success', 'Réservations créées avec succès.');
     }
 
     /**
@@ -97,7 +96,7 @@ class ReservationController extends Controller
             'classe' => $request->classe,
         ]);
     
-        return redirect()->route('reservations.index')->with('message', 'Réservations modifiées avec succès.');
+        return redirect()->route('reservations.index')->with('success', 'Réservations modifiées avec succès.');
     }
 
     /**
@@ -178,27 +177,37 @@ public function getCityFromIata($iataCode)
 
 public function search(Request $request, AmadeusService $amadeusService)
 {
-    // Recherche des vols
+    // Validation des champs
+    $request->validate([
+        'ville_depart' => 'required|string',
+        'ville_arrivee' => 'required|string|different:ville_depart',
+        'date_depart' => 'required|date',
+    ]);
+
+    // Récupération des codes IATA pour les villes
+    $villeDepart = $amadeusService->searchCities($request->input('ville_depart'));
+    $villeArrivee = $amadeusService->searchCities($request->input('ville_arrivee'));
+
+    if (empty($villeDepart['data']) || empty($villeArrivee['data'])) {
+        return back()->with('error', 'Impossible de trouver les codes IATA pour les villes sélectionnées.');
+    }
+
+    // Récupérer le premier code IATA de chaque ville
+    $codeDepart = $villeDepart['data'][0]['iataCode'];
+    $codeArrivee = $villeArrivee['data'][0]['iataCode'];
+
+    // Recherche des vols avec les codes IATA
     $flights = $amadeusService->searchFlights(
-        $request->input('ville_depart'),
-        $request->input('ville_arrivee'),
+        $codeDepart,
+        $codeArrivee,
         $request->input('date_depart')
     );
 
-    if (!empty($flights['data'])) {
-        foreach ($flights['data'] as &$flight) {
-            foreach ($flight['itineraries'] as &$itinerary) {
-                foreach ($itinerary['segments'] as &$segment) {
-                    // Convertir les codes IATA en noms de villes
-                    $segment['departure']['cityName'] = $amadeusService->getCityFromIata($segment['departure']['iataCode']);
-                    $segment['arrival']['cityName'] = $amadeusService->getCityFromIata($segment['arrival']['iataCode']);
-                }
-            }
-        }
+    if (empty($flights['data'])) {
+        return back()->with('error', 'Aucun vol disponible pour les critères sélectionnés.');
     }
 
     return view('flights.voldispo', compact('flights'));
 }
-
 
 }
