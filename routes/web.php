@@ -32,7 +32,12 @@ Route::middleware('auth')->group(function () {
     
 
     Route::resource('hotels', HotelController::class);
-
+    Route::get('/flights', [ReservationController::class, 'showSearchForm'])->name('flights.form');
+    Route::get('/flights/search', [ReservationController::class, 'searchFlights'])->name('flights.search');
+    
+    Route::get('/api/search-cities', [ReservationController::class, 'searchCities']);
+    Route::post('reservations/search', [ReservationController::class, 'search'])->name('reservations.search');
+    
 });
 
 require __DIR__.'/auth.php';

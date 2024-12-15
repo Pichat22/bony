@@ -34,5 +34,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'amadeus' => [
+        'key' => env('AMADEUS_API_KEY'),
+        'secret' => env('AMADEUS_API_SECRET'),
+        'base_url' => env('AMADEUS_API_URL'),
+    ],
 
 ];

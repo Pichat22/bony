@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Models\Reservation;
+namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
+use App\Services\AmadeusService;
 use Illuminate\Support\Facades\Auth;
 
 class ReservationController extends Controller
@@ -104,5 +108,97 @@ class ReservationController extends Controller
         $reservation->delete();
         return redirect()->route('reservations.index');
     }
-   
+    
+    protected $amadeusService;
+
+    public function __construct(AmadeusService $amadeusService)
+    {
+        $this->amadeusService = $amadeusService;
+    }
+
+    public function showSearchForm()
+    {
+        return view('flights.search');
+    }
+
+    public function searchFlights(Request $request)
+    {
+        $origin = $request->input('origin');
+        $destination = $request->input('destination');
+        $departureDate = $request->input('departureDate');
+
+        $flights = $this->amadeusService->searchFlights($origin, $destination, $departureDate);
+
+        return view('flights.search', compact('flights'));
+    }
+    public function searchHotels(Request $request)
+    {
+        $query = $request->input('query');
+
+        $hotels = $this->amadeusService->searchCities($query);
+
+        return response()->json($hotels);
+    }
+    public function searchCities(Request $request, AmadeusService $amadeusService)
+{
+    $query = $request->input('query');
+
+    if (empty($query)) {
+        return response()->json(['error' => 'Le champ de recherche est vide.'], 400);
+    }
+
+    try {
+        $results = $amadeusService->searchCities($query);
+
+        if (isset($results['errors'])) {
+            return response()->json(['error' => $results['errors'][0]['detail'] ?? 'Erreur API'], 400);
+        }
+
+        return response()->json($results);
+    } catch (Exception $e) {
+        return response()->json(['error' => 'Erreur serveur : ' . $e->getMessage()], 500);
+    }
+}
+public function getCityFromIata($iataCode)
+{
+    // Appel API pour obtenir les détails de l'aéroport
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . $this->getAccessToken(),
+    ])->get('https://test.api.amadeus.com/v1/reference-data/locations', [
+        'keyword' => $iataCode,
+        'subType' => 'AIRPORT',
+    ]);
+
+    if ($response->ok() && !empty($response['data'])) {
+        return $response['data'][0]['address']['cityName'] ?? $iataCode; // Retourne le nom de la ville
+    }
+
+    return $iataCode; // Retourne le code si la ville n'est pas trouvée
+}
+
+public function search(Request $request, AmadeusService $amadeusService)
+{
+    // Recherche des vols
+    $flights = $amadeusService->searchFlights(
+        $request->input('ville_depart'),
+        $request->input('ville_arrivee'),
+        $request->input('date_depart')
+    );
+
+    if (!empty($flights['data'])) {
+        foreach ($flights['data'] as &$flight) {
+            foreach ($flight['itineraries'] as &$itinerary) {
+                foreach ($itinerary['segments'] as &$segment) {
+                    // Convertir les codes IATA en noms de villes
+                    $segment['departure']['cityName'] = $amadeusService->getCityFromIata($segment['departure']['iataCode']);
+                    $segment['arrival']['cityName'] = $amadeusService->getCityFromIata($segment['arrival']['iataCode']);
+                }
+            }
+        }
+    }
+
+    return view('flights.voldispo', compact('flights'));
+}
+
+
 }
