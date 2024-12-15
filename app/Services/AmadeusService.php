@@ -82,6 +82,18 @@ class AmadeusService
     }
 }
 
+public function getCityFromIata($iataCode)
+{
+    // Appel API pour obtenir les détails de l'aéroport
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . $this->getAccessToken(),
+    ])->get('https://test.api.amadeus.com/v1/reference-data/locations', [
+        'keyword' => $iataCode,
+        'subType' => 'AIRPORT',
+    ]);
 
+    if ($response->ok() && !empty($response['data'])) {
+        return $response['data'][0]['address']['cityName'] ?? $iataCode; // Retourne le nom de l
 }
+}}
 //         ]);
