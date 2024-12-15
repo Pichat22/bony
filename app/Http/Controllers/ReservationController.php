@@ -15,11 +15,11 @@ class ReservationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $reservations= Reservation::all();
-        return view('reservations.index',compact('reservations'));
-    }
+    // public function index()
+    
+        // $reservations= Reservation::all();
+        // return view('reservations.index');
+    
 
     /**
      * Show the form for creating a new resource.
