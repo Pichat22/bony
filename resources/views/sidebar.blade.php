@@ -3,6 +3,7 @@
     font-size:1.25rem;
     padding:10px 15px;
     color:white;
+    
     transition: background-color 0.3s, color 0.3s;
   }
   .sidbar a.nav-link:hover {
@@ -10,7 +11,7 @@
   
 </style>
 
-<div class="d-flex flex-column bg-warning flex-shrink-0 p-3 shadow-lg sidbar" style="width: 250px; height: 100vh; margin-left: -13px;">
+<div class="d-flex flex-column bg-warning flex-shrink-0 p-3 shadow-lg sidbar" style="width: 250px; height: 89vh; margin-left: -10px;">
     <a href="{{ route('dashboard') }}" class="d-flex align-items-center mb-3 mb-md-0 link-dark text-decoration-none">
         <span class="fs-4 fw-bold text-center w-100 text-white">Menu</span>
     </a>

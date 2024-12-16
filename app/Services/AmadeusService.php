@@ -49,7 +49,7 @@ class AmadeusService
                 ],
                 'query' => [
                     'keyword' => $query,
-                    'subType' => 'CITY', // Recherche uniquement des villes
+                    'subType' => 'CITY,AIRPORT', // Recherche uniquement des villes
                 ],
             ]);
     
@@ -150,6 +150,48 @@ public function getAirlineName($airlineCode)
         return $airlineCode;
     });
 }
+
+public function searchHotels($cityCode, $checkInDate, $checkOutDate)
+{
+    $token = $this->getAccessToken();
+
+    if (!$token) {
+        return ['error' => 'Unable to fetch access token'];
+    }
+
+    try {
+        $response = Http::withOptions(['verify' => false]) // Désactive la vérification SSL pour l'environnement de test
+            ->withHeaders(['Authorization' => "Bearer {$token}"])
+            ->get('https://test.api.amadeus.com/v2/shopping/hotel-offers', [
+                'cityCode' => $cityCode,
+                'checkInDate' => $checkInDate,
+                'checkOutDate' => $checkOutDate,
+                'adults' => 1, // Nombre d'adultes
+                'radius' => 50, // Rayon autour de la ville
+                'radiusUnit' => 'KM',
+            ]);
+
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        // Ajout de logs pour déboguer les erreurs
+        \Log::info('Response from Amadeus API', ['response' => $data]);
+
+        // Vérification des erreurs dans la réponse
+        if (isset($data['errors'])) {
+            return ['error' => $data['errors'][0]['detail'] ?? 'Unknown error occurred'];
+        }
+
+        return $data; // Retourne les données des hôtels
+    } catch (\Exception $e) {
+        \Log::error('Amadeus API Error', ['exception' => $e->getMessage()]);
+        return ['error' => 'Server error occurred: ' . $e->getMessage()];
+    }
+}
+
+
+
+
+
 
 }
 //         ]);

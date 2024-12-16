@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HotelController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReservationController;
 
 Route::get('/', function () {
@@ -31,13 +32,15 @@ Route::middleware('auth')->group(function () {
     // Route::post('/reservations/hotel', [ReservationController::class, 'storeHotel'])->name('reservations.hotel.store');
     
 
-    Route::resource('hotels', HotelController::class);
+  //  Route::resource('hotels', HotelController::class);
     Route::get('/flights', [ReservationController::class, 'showSearchForm'])->name('flights.form');
     Route::get('/flights/search', [ReservationController::class, 'searchFlights'])->name('flights.search');
     Route::get('/reservations/search', [ReservationController::class, 'search'])->name('reservations.search');
     Route::get('/api/search-cities', [ReservationController::class, 'searchCities']);
    Route::post('/reservations/searchs', [ReservationController::class, 'search'])->name('reservations.search.post');
-    
+   Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index');
+   Route::get('/api/cities', [HotelController::class, 'searchCities'])->name('api.cities');
+
     // Gestion des utilisateurs
 
     // Route pour afficher le formulaire de l'utiisateur
@@ -55,6 +58,9 @@ Route::get('/reservations/create', [ReservationController::class, 'create'])->na
 
 // Route pour enregistrer les données de la réservation
 Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
+Route::get('/hotels/search', [HotelController::class, 'showHotelSearchForm'])->name('hotels.search.form');
+Route::post('/hotel/search', [HotelController::class, 'searchHotels'])->name('hotels.search');
+Route::get('/dashboards', [DashboardController::class, 'index'])->name('dashboard.index');
 
 });
 
