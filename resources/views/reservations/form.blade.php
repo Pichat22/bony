@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1 class="mb-4 text-center text-primary">Formulaire de Réservation</h1>
+        <h1 class="mb-4 text-center text-warning">Formulaire de Réservation</h1>
 
         <!-- Affichage des erreurs -->
         @if ($errors->any())
@@ -21,7 +21,7 @@
 
             <!-- Carte principale pour les informations du vol -->
             <div class="card shadow-lg mb-5">
-                <div class="card-header bg-primary text-white text-center">
+                <div class="card-header bg-warning text-white text-center">
                     <h5 class="text-uppercase mb-0">Informations du Vol</h5>
                 </div>
                 <div class="card-body">
@@ -66,7 +66,7 @@
 
             <!-- Formulaire pour les passagers -->
             <div class="card shadow-lg">
-                <div class="card-header bg-primary text-white text-center">
+                <div class="card-header bg-warning text-white text-center">
                     <h5 class="text-uppercase mb-0">Informations des Passagers</h5>
                 </div>
                 <div class="card-body">
@@ -86,7 +86,7 @@
 
             <!-- Bouton de soumission -->
             <div class="text-center mt-5">
-                <button type="submit" class="btn btn-success btn-lg">Réserver</button>
+                <button type="submit" class="btn btn-warning btn-lg">Réserver</button>
             </div>
         </form>
     </div>

@@ -1,48 +1,65 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="mb-4 text-center">Vols disponibles</h1>
-
-    @if ($flights->count() > 0)
-        <table class="table table-striped table-bordered">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Compagnie</th>
-                    <th>Origine</th>
-                    <th>Destination</th>
-                    <th>Heure de départ</th>
-                    <th>Heure d'arrivée</th>
-                    <th>Prix</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($flights as $flight)
-                    @foreach ($flight['itineraries'] as $itinerary)
-                        @foreach ($itinerary['segments'] as $segment)
-                            <tr>
-                                <td>{{ $flight['airlineName'] ?? $flight['validatingAirlineCodes'][0] }}</td>
-                                <td>{{ $segment['departure']['cityName'] ?? $segment['departure']['iataCode'] }}</td>
-                                <td>{{ $segment['arrival']['cityName'] ?? $segment['arrival']['iataCode'] }}</td>
-                                <td>{{ \Carbon\Carbon::parse($segment['departure']['at'])->format('d/m/Y H:i') }}</td>
-                                <td>{{ \Carbon\Carbon::parse($segment['arrival']['at'])->format('d/m/Y H:i') }}</td>
-                                <td>{{ $flight['price']['total'] }} {{ $flight['price']['currency'] }}</td>
-                                <td>
-                                    <a href="{{ route('reservations.create', ['flight' => json_encode($flight)]) }}" 
-                                       class="btn btn-primary btn-sm">Réserver</a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @endforeach
-                @endforeach
-            </tbody>
-        </table>
-
-        <!-- Pagination -->
-        <div class="mt-4 d-flex justify-content-center">
-            {{ $flights->appends(request()->query())->links() }}
+<div class="container my-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-warning text-white text-center">
+            <h1 class="mb-0">Vols Disponibles</h1>
         </div>
-    @else
-        <p class="text-center">Aucun vol disponible.</p>
-    @endif
+        <div class="card-body">
+            @if ($flights->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th>Compagnie</th>
+                                <th>Origine</th>
+                                <th>Destination</th>
+                                <th class="text-center">Heure de départ</th>
+                                <th class="text-center">Heure d'arrivée</th>
+                                <th class="text-center">Prix</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($flights as $flight)
+                                @foreach ($flight['itineraries'] as $itinerary)
+                                    @foreach ($itinerary['segments'] as $segment)
+                                        <tr>
+                                            <td class="align-middle">{{ $flight['airlineName'] ?? $flight['validatingAirlineCodes'][0] }}</td>
+                                            <td class="align-middle">{{ $segment['departure']['cityName'] ?? $segment['departure']['iataCode'] }}</td>
+                                            <td class="align-middle">{{ $segment['arrival']['cityName'] ?? $segment['arrival']['iataCode'] }}</td>
+                                            <td class="text-center align-middle text-primary">
+                                                {{ \Carbon\Carbon::parse($segment['departure']['at'])->format('d/m/Y H:i') }}
+                                            </td>
+                                            <td class="text-center align-middle text-success">
+                                                {{ \Carbon\Carbon::parse($segment['arrival']['at'])->format('d/m/Y H:i') }}
+                                            </td>
+                                            <td class="text-center align-middle text-danger">
+                                                {{ number_format($flight['price']['total'], 2, ',', ' ') }} {{ $flight['price']['currency'] }}
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <a href="{{ route('reservations.create', ['flight' => json_encode($flight)]) }}" 
+                                                   class="btn btn-warning btn-sm text-white">
+                                                    Réserver
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endforeach
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-4 d-flex justify-content-center">
+                    {{ $flights->appends(request()->query())->links() }}
+                </div>
+            @else
+                <p class="text-center text-danger">Aucun vol disponible.</p>
+            @endif
+        </div>
+    </div>
+</div>
 @endsection
