@@ -39,4 +39,5 @@ class DashboardController extends Controller
             'reservationsByMonth'
         ));
     }
+    
 }

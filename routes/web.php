@@ -11,8 +11,12 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    $user=Auth::user();
-    return view('dashboard');
+    $user = Auth::user();
+
+    // Récupérer les réservations de l'utilisateur connecté
+    $userReservations = \App\Models\Reservation::where('user_id', $user->id)->get();
+
+    return view('dashboard', compact('userReservations'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
