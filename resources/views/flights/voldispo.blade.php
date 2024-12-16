@@ -3,7 +3,7 @@
 @section('content')
     <h1>Vols disponibles</h1>
 
-    @if (!empty($flights['data']))
+    @if (count($flights) > 0)
     <table class="table table-striped">
         <thead>
             <tr>
@@ -16,7 +16,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($flights['data'] as $flight)
+            @foreach ($flights as $flight)
                 @foreach ($flight['itineraries'] as $itinerary)
                     @foreach ($itinerary['segments'] as $segment)
                         <tr>
@@ -32,9 +32,11 @@
             @endforeach
         </tbody>
     </table>
-    
-    
-    
+
+    <!-- Liens de pagination -->
+    <div class="mt-4">
+        {{ $flights->links() }}
+    </div>
     @else
         <p>Aucun vol disponible.</p>
     @endif

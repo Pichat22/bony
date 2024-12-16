@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Reservation;
 
 use Illuminate\Support\Facades\Auth;
-namespace App\Http\Controllers;
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use App\Services\AmadeusService;
 use Illuminate\Http\Request;
+use Exception;
+use Illuminate\Support\Facades\Http;
 class ReservationController extends Controller
 {
     /**
@@ -159,7 +161,6 @@ class ReservationController extends Controller
     }
 }
 
-
 public function search(Request $request, AmadeusService $amadeusService)
 {
     $flights = $amadeusService->searchFlights(
@@ -173,7 +174,6 @@ public function search(Request $request, AmadeusService $amadeusService)
             $airlineCode = $flight['validatingAirlineCodes'][0] ?? null;
 
             if ($airlineCode) {
-                // Convertir le code IATA en nom complet
                 $flight['airlineName'] = $amadeusService->getAirlineName($airlineCode);
             }
 
@@ -186,8 +186,28 @@ public function search(Request $request, AmadeusService $amadeusService)
         }
     }
 
-    return view('flights.voldispo', compact('flights'));
+    // Convertir les données en collection
+    $flightsCollection = collect($flights['data']);
+
+    // Paginer la collection
+    $perPage = 6; // Nombre d'éléments par page
+    $currentPage = LengthAwarePaginator::resolveCurrentPage(); // Page actuelle
+    $currentItems = $flightsCollection->slice(($currentPage - 1) * $perPage, $perPage)->values(); // Découpe les éléments pour la page
+
+    $paginatedFlights = new LengthAwarePaginator(
+        $currentItems, // Les éléments de la page
+        $flightsCollection->count(), // Total des éléments
+        $perPage, // Nombre par page
+        $currentPage, // Page actuelle
+        ['path' => LengthAwarePaginator::resolveCurrentPath()] // Chemin de pagination
+    );
+
+    return view('flights.voldispo', [
+        'flights' => $paginatedFlights, // Données paginées
+    ]);
 }
+
+
 
 
 
