@@ -9,13 +9,30 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Reservation extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
-        'user_id',
-        'nombre_de_place',
+        'type_reservation',
         'date',
         'statut',
-        'classe',
+        'user_id',
+        'prix',
+        'nombre_places',
+        'compagnie',
+        'origine',
+        'destination',
+        'heure_depart',
+        'heure_arrivee',
+        'nom_hotel',
+        'ville_hotel',
+        'date_arrivee',
+        'date_depart',
+        'passagers',
+    ];
 
+    // Décoder automatiquement les passagers JSON
+    protected $casts = [
+        'passagers' => 'array',
     ];
 
     public function user()
@@ -23,8 +40,4 @@ class Reservation extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function hotel()
-    {
-        return $this->belongsTo(Hotel::class);
-    }
 }

@@ -4,75 +4,98 @@
     <div class="container">
         <h1 class="mb-4 text-center text-primary">Formulaire de Réservation</h1>
 
-        <!-- Carte principale -->
-        <div class="card shadow-lg">
-            <div class="card-body">
-                <h5 class="card-title text-center text-uppercase">Informations du Vol</h5>
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label class="fw-bold">Compagnie :</label>
-                        <input type="text" class="form-control" name="compagnie" 
-                               value="{{ $flight['airlineName'] ?? ($flight['validatingAirlineCodes'][0] ?? 'Non spécifiée') }}" readonly>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="fw-bold">Prix :</label>
-                        <input type="text" class="form-control" name="prix" 
-                               value="{{ $flight['price']['total'] ?? '0' }} {{ $flight['price']['currency'] ?? 'EUR' }}" readonly>
-                    </div>
+        <!-- Affichage des erreurs -->
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <!-- Formulaire pour la réservation -->
+        <form method="POST" action="{{ route('reservations.store') }}" class="needs-validation" novalidate>
+            @csrf
+
+            <!-- Carte principale pour les informations du vol -->
+            <div class="card shadow-lg mb-5">
+                <div class="card-header bg-primary text-white text-center">
+                    <h5 class="text-uppercase mb-0">Informations du Vol</h5>
                 </div>
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label class="fw-bold">Origine :</label>
-                        <input type="text" class="form-control" name="origine" 
-                               value="{{ $flight['itineraries'][0]['segments'][0]['departure']['cityName'] ?? ($flight['itineraries'][0]['segments'][0]['departure']['iataCode'] ?? 'Non spécifiée') }}" readonly>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="fw-bold">Compagnie :</label>
+                            <input type="text" class="form-control" name="compagnie" 
+                                   value="{{ $flight['airlineName'] ?? ($flight['validatingAirlineCodes'][0] ?? 'Non spécifiée') }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="fw-bold">Prix :</label>
+                            <input type="text" class="form-control" name="prix" 
+                                   value="{{ number_format((float) $flight['price']['total'] ?? 0, 2, '.', '') }}" readonly>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <label class="fw-bold">Destination :</label>
-                        <input type="text" class="form-control" name="destination" 
-                               value="{{ $flight['itineraries'][0]['segments'][0]['arrival']['cityName'] ?? ($flight['itineraries'][0]['segments'][0]['arrival']['iataCode'] ?? 'Non spécifiée') }}" readonly>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="fw-bold">Origine :</label>
+                            <input type="text" class="form-control" name="origine" 
+                                   value="{{ $flight['itineraries'][0]['segments'][0]['departure']['cityName'] ?? ($flight['itineraries'][0]['segments'][0]['departure']['iataCode'] ?? 'Non spécifiée') }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="fw-bold">Destination :</label>
+                            <input type="text" class="form-control" name="destination" 
+                                   value="{{ $flight['itineraries'][0]['segments'][0]['arrival']['cityName'] ?? ($flight['itineraries'][0]['segments'][0]['arrival']['iataCode'] ?? 'Non spécifiée') }}" readonly>
+                        </div>
                     </div>
-                </div>
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <label class="fw-bold">Heure de Départ :</label>
-                        <input type="text" class="form-control" name="heure_depart" 
-                               value="{{ \Carbon\Carbon::parse($flight['itineraries'][0]['segments'][0]['departure']['at'] ?? now())->format('d/m/Y H:i') }}" readonly>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="fw-bold">Heure d'Arrivée :</label>
-                        <input type="text" class="form-control" name="heure_arrivee" 
-                               value="{{ \Carbon\Carbon::parse($flight['itineraries'][0]['segments'][0]['arrival']['at'] ?? now())->format('d/m/Y H:i') }}" readonly>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="fw-bold">Heure de Départ :</label>
+                            <input type="text" class="form-control" name="heure_depart" 
+                                   value="{{ $flight['itineraries'][0]['segments'][0]['departure']['at'] ?? now()->toDateTimeString() }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="fw-bold">Heure d'Arrivée :</label>
+                            <input type="text" class="form-control" name="heure_arrivee" 
+                                   value="{{ $flight['itineraries'][0]['segments'][0]['arrival']['at'] ?? now()->toDateTimeString() }}" readonly>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Formulaire dynamique pour les passagers -->
-        <form method="POST" action="{{ route('reservations.store') }}" class="mt-5">
-            @csrf
+            <!-- Formulaire pour les passagers -->
             <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h5 class="text-uppercase mb-0">Informations des Passagers</h5>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title text-center text-uppercase">Informations des Passagers</h5>
+                    <!-- Champ pour le nombre de passagers -->
                     <div class="form-group mb-4">
                         <label class="fw-bold">Nombre de Passagers :</label>
                         <input type="number" class="form-control" id="nombre_passagers" name="nombre_passagers" placeholder="Entrez le nombre de passagers" min="1" required>
+                        <div class="invalid-feedback">
+                            Veuillez entrer un nombre de passagers valide.
+                        </div>
                     </div>
+
+                    <!-- Conteneur des passagers -->
                     <div id="passengers-container" class="mt-4"></div>
                 </div>
             </div>
 
             <!-- Bouton de soumission -->
             <div class="text-center mt-5">
-                <button type="submit" class="btn btn-primary btn-lg">Réserver</button>
+                <button type="submit" class="btn btn-success btn-lg">Réserver</button>
             </div>
         </form>
     </div>
 
     <script>
-        // Gestion dynamique des passagers
+        // Gestion dynamique des champs pour les passagers
         document.getElementById('nombre_passagers').addEventListener('input', function () {
             const container = document.getElementById('passengers-container');
-            container.innerHTML = ''; // Réinitialise les champs
+            container.innerHTML = ''; // Réinitialise les champs existants
 
             const nombrePassagers = parseInt(this.value);
             if (isNaN(nombrePassagers) || nombrePassagers < 1) return;
@@ -103,5 +126,20 @@
                 container.appendChild(passagerDiv);
             }
         });
+
+        // Validation côté client (Bootstrap)
+        (function () {
+            'use strict';
+            const forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        })();
     </script>
 @endsection

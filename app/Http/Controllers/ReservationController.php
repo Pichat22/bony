@@ -19,8 +19,9 @@ class ReservationController extends Controller
      */
     public function index()
     {
-        $reservations= Reservation::all();
-        return view('reservations.index',compact('reservations'));
+       
+    $reservations = Reservation::paginate(10); // 10 réservations par page
+    return view('reservations.index', compact('reservations'));
     }
 
     /**
@@ -45,23 +46,54 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
+        // Validation
         $request->validate([
-            'date'=>'required',
-            'statut'=>'required',
-            'classe'=>'required',
-    
-           ]);
-           
-           Reservation::create([
-            'user_id' => Auth::id(), // ID de l'utilisateur connecté
-            'date' => $request->date,
-            'statut' => $request->statut,
-            'classe' => $request->classe,
+            'compagnie' => 'required|string',
+            'origine' => 'required|string',
+            'destination' => 'required|string',
+            'heure_depart' => 'required|date', // Assurez-vous qu'il s'agit d'une date valide
+            'heure_arrivee' => 'required|date|after_or_equal:heure_depart',
+            'prix' => 'required|numeric|min:0', // Prix doit être un nombre valide
+            'nombre_passagers' => 'required|integer|min:1',
+            'passagers' => 'required|array',
+            'passagers.*.nom' => 'required|string|max:255',
+            'passagers.*.prenom' => 'required|string|max:255',
+            'passagers.*.telephone' => 'required|string|max:20',
         ]);
     
-        return redirect()->route('reservations.index')->with('success', 'Réservations créées avec succès.');
+        // Reformater les dates si nécessaire
+        $heure_depart = \Carbon\Carbon::parse($request->input('heure_depart'))->format('Y-m-d H:i:s');
+        $heure_arrivee = \Carbon\Carbon::parse($request->input('heure_arrivee'))->format('Y-m-d H:i:s');
+    
+        // Préparer les passagers
+        $passagers = [];
+        foreach ($request->input('passagers') as $passager) {
+            $passagers[] = [
+                'nom' => $passager['nom'],
+                'prenom' => $passager['prenom'],
+                'telephone' => $passager['telephone'],
+            ];
+        }
+    
+        // Enregistrer la réservation
+        Reservation::create([
+            'type_reservation' => 'billet',
+            'date' => now(),
+            'statut' => 'en attente',
+            'user_id' => auth()->id(),
+            'compagnie' => $request->input('compagnie'),
+            'origine' => $request->input('origine'),
+            'destination' => $request->input('destination'),
+            'heure_depart' => $heure_depart,
+            'heure_arrivee' => $heure_arrivee,
+            'prix' => $request->input('prix'),
+            'nombre_places' => $request->input('nombre_passagers'),
+            'passagers' => json_encode($passagers),
+        ]);
+    
+        return redirect()->route('reservations.index')->with('success', 'Réservation enregistrée avec succès.');
     }
-
+    
     /**
      * Display the specified resource.
      */
