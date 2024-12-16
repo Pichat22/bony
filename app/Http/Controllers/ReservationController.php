@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Reservation;
 
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Pagination\LengthAwarePaginator;
+
+use Illuminate\Support\Collection;
 use App\Services\AmadeusService;
 use Illuminate\Http\Request;
 use Exception;
@@ -25,9 +26,17 @@ class ReservationController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('reservations.form');
+        $flight = json_decode($request->input('flight'), true);
+
+        // Vérifiez les données pour éviter les erreurs
+        $origin = $flight['itineraries'][0]['segments'][0]['departure']['cityName'] ?? 'Non spécifiée';
+        $destination = $flight['itineraries'][0]['segments'][0]['arrival']['cityName'] ?? 'Non spécifiée';
+        $price = $flight['price']['total'] ?? 0;
+        $currency = $flight['price']['currency'] ?? 'EUR';
+    
+        return view('reservations.form', compact('flight', 'origin', 'destination', 'price', 'currency'));
       
     }
 
@@ -161,6 +170,9 @@ class ReservationController extends Controller
     }
 }
 
+
+
+
 public function search(Request $request, AmadeusService $amadeusService)
 {
     $flights = $amadeusService->searchFlights(
@@ -191,21 +203,23 @@ public function search(Request $request, AmadeusService $amadeusService)
 
     // Paginer la collection
     $perPage = 6; // Nombre d'éléments par page
-    $currentPage = LengthAwarePaginator::resolveCurrentPage(); // Page actuelle
-    $currentItems = $flightsCollection->slice(($currentPage - 1) * $perPage, $perPage)->values(); // Découpe les éléments pour la page
+    $currentPage = LengthAwarePaginator::resolveCurrentPage();
+    $currentItems = $flightsCollection->slice(($currentPage - 1) * $perPage, $perPage)->values();
 
     $paginatedFlights = new LengthAwarePaginator(
         $currentItems, // Les éléments de la page
         $flightsCollection->count(), // Total des éléments
         $perPage, // Nombre par page
         $currentPage, // Page actuelle
-        ['path' => LengthAwarePaginator::resolveCurrentPath()] // Chemin de pagination
+        ['path' => request()->url(), 'query' => request()->query()] // Chemin et paramètres pour la pagination
     );
 
     return view('flights.voldispo', [
-        'flights' => $paginatedFlights, // Données paginées
+        'flights' => $paginatedFlights, // Retourne un objet LengthAwarePaginator
     ]);
 }
+
+
 
 
 

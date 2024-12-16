@@ -34,9 +34,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('hotels', HotelController::class);
     Route::get('/flights', [ReservationController::class, 'showSearchForm'])->name('flights.form');
     Route::get('/flights/search', [ReservationController::class, 'searchFlights'])->name('flights.search');
-    
+    Route::get('/reservations/search', [ReservationController::class, 'search'])->name('reservations.search');
     Route::get('/api/search-cities', [ReservationController::class, 'searchCities']);
-    Route::post('reservations/search', [ReservationController::class, 'search'])->name('reservations.search');
+   Route::post('/reservations/searchs', [ReservationController::class, 'search'])->name('reservations.search.post');
     
     // Gestion des utilisateurs
 
@@ -51,7 +51,11 @@ Route::post('/user', function () {
     // Traitement des données du formulaire
     return back()->with('success', 'Création avec success');
 });
-    
+Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
+
+// Route pour enregistrer les données de la réservation
+Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
+
 });
 
 require __DIR__.'/auth.php';

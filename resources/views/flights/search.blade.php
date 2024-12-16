@@ -19,7 +19,7 @@
             {{ session('error') }}
         </div>
     @endif
-    <form method="POST" action="{{ route('reservations.search') }}">
+    <form method="POST" action="{{ route('reservations.search.post') }}">
     @csrf
         <!-- Recherche Ville de départ -->
         <div class="form-group">
