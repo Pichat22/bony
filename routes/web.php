@@ -38,6 +38,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/search-cities', [ReservationController::class, 'searchCities']);
     Route::post('reservations/search', [ReservationController::class, 'search'])->name('reservations.search');
     
+    // Gestion des utilisateurs
+
+    // Route pour afficher le formulaire de l'utiisateur
+    Route::get('/user', function () {
+        return view('users.form'); // Charge la vue du formulaire.
+    });
+    
+
+// Route pour rediriger vers le formulaire de l'utilisateur
+Route::post('/user', function () {
+    // Traitement des données du formulaire
+    return back()->with('success', 'Création avec success');
+});
+    
 });
 
 require __DIR__.'/auth.php';

@@ -5,9 +5,9 @@
 
     <form method="POST" action="{{ route('login') }}">
         @csrf
-        <div class="d-flex justify-content-start mb-4 ms-4" style="background-color: #333333; padding: 10px; border-radius: 8px;">
+        <div class="d-flex justify-content-center mb-4" style="margin-left:6rem;">
             <a href="/">
-                <img src="{{asset('image/logo-removebg-preview.png')}}" width="140" alt="">
+                <img src="{{asset('image/logo-removebg-preview.png')}}" width="170" alt="">
             </a>
         </div>
         

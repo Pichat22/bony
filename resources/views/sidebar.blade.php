@@ -27,6 +27,12 @@
                 <i class="bi bi-gear me-2"></i>
                 <span>Paramètres</span>
             </a>
+            <li class="nav-item mb-2">
+            <a href="/user" class="nav-link text-white d-flex align-items-center">
+            <i class="bi bi-person me-2"></i>
+                <span>Créer Utilisateur</span>
+            </a>
+        </li>
         </li>
         <li class="nav-item mb-2">
             <a href="{{ route('profile.edit') }}" class="nav-link text-white d-flex align-items-center">
