@@ -257,12 +257,15 @@ public function search(Request $request, AmadeusService $amadeusService)
 
 
 public function indexAdmin()
-    {
-        // Récupérer toutes les réservations avec leurs utilisateurs
-        $reservations = Reservation::with('user')->get();
+{
+    $reservations = Reservation::with('user')->get();
 
-        return view('reservations.admin_index', compact('reservations'));
-    }
+    $hotelReservations = $reservations->where('type_reservation', 'hotel');
+    $flightReservations = $reservations->where('type_reservation', 'billet');
+
+    return view('reservations.admin_index', compact('hotelReservations', 'flightReservations'));
+}
+
 
 
 

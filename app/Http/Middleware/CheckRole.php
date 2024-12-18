@@ -18,7 +18,10 @@ class CheckRole
             return $next($request);
         }
 
-        abort(403, 'Accès interdit. Vous n’avez pas les autorisations nécessaires.');
+        // Redirige avec un message d'alerte
+        return redirect()
+            ->route('dashboard') // Remplacez par le nom de la route des réservations
+            ->with('error', 'Accès interdit. Vous avez été redirigé vers vos réservations.');
     }
 }
 

@@ -29,7 +29,7 @@
                         <th class="text-center">Prix</th>
                         <th>Statut</th>
                         <th>Classe</th>
-                        <th class="text-center">Actions</th>
+                        {{-- <th class="text-center">Actions</th> --}}
                     </tr>
                 </thead>
                 <tbody>
@@ -57,7 +57,7 @@
                                 </span>
                             </td>
                             <td>{{ $reservation->classe ?? 'N/A' }}</td>
-                            <td class="d-flex justify-content-center">
+                            {{-- <td class="d-flex justify-content-center">
                                 <a href="{{ route('reservations.show', $reservation->id) }}" class="btn btn-success btn-sm m-1">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
@@ -71,7 +71,7 @@
                                         <i class="bi bi-trash3-fill"></i>
                                     </button>
                                 </form>
-                            </td>
+                            </td> --}}
                         </tr>
                     @endforeach
                 </tbody>

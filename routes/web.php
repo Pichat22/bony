@@ -22,7 +22,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/users/{id}/edit-role', [RegisteredUserController::class, 'editRole'])->name('users.edit.role');
     Route::patch('/users/{id}/role', [RegisteredUserController::class, 'updateRole'])->name('users.update.role');
  
-        Route::get('/reservations/admin', [ReservationController::class, 'indexAdmin'])->name('reservations.admin.index');
+         Route::get('/reservations/admin', [ReservationController::class, 'indexAdmin'])->name('reservations.admin.index');
     
 });
 

@@ -3,7 +3,13 @@
 @section('content')
 <div class="container my-5">
     <h1 class="text-center mb-4 text-uppercase text-primary">Tableau de Bord</h1>
-
+    <div class="container my-5">
+        @if(session()->has('error'))
+            <div class="alert alert-danger" id="errorAlert">
+                {{ session('error') }}
+            </div>
+        @endif
+    
     <!-- Message de succès -->
     @if(session()->has('message'))
         <div class="alert alert-success">
@@ -141,4 +147,17 @@
         </div>
     </div>
 </div>
+
+<!-- Script pour cacher le message après 30 secondes -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const alert = document.getElementById('errorAlert');
+        if (alert) {
+            setTimeout(() => {
+                alert.classList.add('fade');
+                setTimeout(() => alert.remove(), 1000); // Supprime complètement après l'animation
+            }, 3000); // 30 secondes
+        }
+    });
+</script>
 @endsection
