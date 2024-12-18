@@ -9,36 +9,27 @@
         <div class="card-body">
             @if (count($hotels) > 0)
                 <div class="table-responsive">
-                    <table class="table table-hover table-bordered">
-                        <thead class="bg-success text-white">
+                    <table class="table table-striped table-hover">
+                        <thead>
                             <tr>
-                                <th>Hôtel</th>
-                                <th>Adresse</th>
-                                <th>Prix (par nuit)</th>
-                                <th>Action</th>
+                                <th>Nom</th>
+                                <th>Latitude</th>
+                                <th>Longitude</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($hotels as $hotel)
                                 <tr>
-                                    <td>{{ $hotel['hotel']['name'] ?? 'Non spécifié' }}</td>
-                                    <td>{{ $hotel['hotel']['address']['lines'][0] ?? 'Adresse non disponible' }}</td>
-                                    <td class="text-danger">
-                                        {{ number_format($hotel['offers'][0]['price']['total'], 2, ',', ' ') }} €
-                                    </td>
-                                    <td class="text-center">
-                                        <a href="{{ route('reservations.create.hotel', ['hotel' => json_encode($hotel)]) }}" 
-                                           class="btn btn-warning btn-sm text-white">
-                                            Réserver
-                                        </a>
-                                    </td>
+                                    <td>{{ $hotel['name'] ?? 'Nom inconnu' }}</td>
+                                    <td>{{ $hotel['geoCode']['latitude'] ?? 'N/A' }}</td>
+                                    <td>{{ $hotel['geoCode']['longitude'] ?? 'N/A' }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
             @else
-                <p class="text-center text-danger">Aucun hôtel disponible.</p>
+                <p class="text-danger text-center">Aucun hôtel trouvé.</p>
             @endif
         </div>
     </div>

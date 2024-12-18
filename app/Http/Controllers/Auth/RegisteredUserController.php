@@ -35,12 +35,12 @@ class RegisteredUserController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $role = $request->input('role','client');
+        
         $user = User::create([
             'nom' => $request->nom,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $role
+             'role' => 'client', // Rôle par défaut
         ]);
 
         event(new Registered($user));
@@ -53,4 +53,30 @@ class RegisteredUserController extends Controller
 
         return redirect()->intended(route('dashboard'));
     }
+
+    public function updateRole(Request $request, $id)
+{
+    $request->validate([
+        'role' => 'required|in:client,admin', // Validation pour éviter les rôles invalides
+    ]);
+
+    $user = User::findOrFail($id);
+    $user->role = $request->role;
+    $user->save();
+
+    return redirect()->route('users.index')->with('success', 'Rôle mis à jour avec succès.');
+}
+public function allusers()
+{
+    $users = User::all();
+    return view('users.index', compact('users'));
+
+}
+public function editRole($id)
+{
+    $user = User::findOrFail($id);
+    return view('users.edit', compact('user'));
+
+
+}
 }

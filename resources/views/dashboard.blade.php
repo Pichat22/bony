@@ -2,12 +2,12 @@
 
 @section('content')
 <div class="container my-5">
-    <h1 class="text-center text-primary mb-4">Tableau de Bord</h1>
+    <h1 class="text-center text-warning mb-4">Tableau de Bord</h1>
     <h4 class="text-center text-secondary mb-5">Réservations faites par <span class="fw-bold text-dark">{{ Auth::user()->name }}</span></h4>
 
     <h3 class="mb-4 text-secondary">Vos Réservations</h3>
     <div class="card shadow-lg border-0">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-warning text-white">
             <h4 class="text-center">Détail de vos Réservations</h4>
         </div>
         <div class="card-body">
@@ -47,7 +47,7 @@
             @endif
         </div>
         <div class="card-footer bg-light text-center">
-            <a href="{{ route('flights.search') }}" class="btn btn-primary btn-lg">
+            <a href="{{ route('flights.search') }}" class="btn btn-warning btn-lg">
                 <i class="bi bi-plus-circle"></i> Faire une Nouvelle Réservation
             </a>
         </div>

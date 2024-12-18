@@ -24,6 +24,9 @@ class ReservationController extends Controller
     return view('reservations.index', compact('reservations'));
     }
 
+    //reservation par utilisateur connecté
+    
+
     /**
      * Show the form for creating a new resource.
      */
@@ -91,7 +94,7 @@ class ReservationController extends Controller
             'passagers' => json_encode($passagers),
         ]);
     
-        return redirect()->route('reservations.index')->with('success', 'Réservation enregistrée avec succès.');
+        return redirect()->route('dashboard')->with('success', 'Réservation enregistrée avec succès.');
     }
     
     /**
@@ -253,7 +256,13 @@ public function search(Request $request, AmadeusService $amadeusService)
 
 
 
+public function indexAdmin()
+    {
+        // Récupérer toutes les réservations avec leurs utilisateurs
+        $reservations = Reservation::with('user')->get();
 
+        return view('reservations.admin_index', compact('reservations'));
+    }
 
 
 

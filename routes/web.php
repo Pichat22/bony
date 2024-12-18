@@ -5,67 +5,61 @@ use App\Http\Controllers\HotelController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\Auth\RegisteredUserController;
 
+// Route d'accueil redirigeant vers la connexion
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/dashboard', function () {
-    $user = Auth::user();
+// Routes accessibles uniquement par les administrateurs
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    // Tableau de bord Admin
+    Route::get('/dashboards', [DashboardController::class, 'index'])->name('dashboard.index');
 
-    // Récupérer les réservations de l'utilisateur connecté
-    $userReservations = \App\Models\Reservation::where('user_id', $user->id)->get();
+    // Gestion des utilisateurs
+    Route::get('/users', [RegisteredUserController::class, 'allusers'])->name('users.index');
+    Route::get('/users/{id}/edit-role', [RegisteredUserController::class, 'editRole'])->name('users.edit.role');
+    Route::patch('/users/{id}/role', [RegisteredUserController::class, 'updateRole'])->name('users.update.role');
+ 
+        Route::get('/reservations/admin', [ReservationController::class, 'indexAdmin'])->name('reservations.admin.index');
+    
+});
 
-    return view('dashboard', compact('userReservations'));
-})->middleware(['auth', 'verified'])->name('dashboard');
-
+// Routes accessibles pour les utilisateurs authentifiés
 Route::middleware('auth')->group(function () {
+    // Dashboard utilisateur connecté
+    Route::get('/dashboard', function () {
+        $user = Auth::user();
+
+        // Récupérer les réservations de l'utilisateur connecté
+        $userReservations = \App\Models\Reservation::where('user_id', $user->id)->get();
+
+        return view('dashboard', compact('userReservations'));
+    })->middleware(['auth', 'verified'])->name('dashboard');
+
+    // Gestion du profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-
-    
-    // Recherche et gestion des réservations
-
+    // Gestion des réservations
     Route::resource('reservations', ReservationController::class);
-    // Route::post('reservations/search', [ReservationController::class, 'search'])->name('reservations.search');
-    
-    // Route::get('/user_reservation', [ReservationController::class, 'ReservationByUser'])->name('reservations.user');
-    // Route::get('reservations/{id}/download', [ReservationController::class, 'downloadPDF'])->name('reservations.download');
-    // Route::post('/reservations/hotel', [ReservationController::class, 'storeHotel'])->name('reservations.hotel.store');
-    
-
-  //  Route::resource('hotels', HotelController::class);
+    Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
+    Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
+    Route::get('/reservations/search', [ReservationController::class, 'search'])->name('reservations.search');
+    Route::post('/reservations/searchs', [ReservationController::class, 'search'])->name('reservations.search.post');
+    Route::get('/api/search-cities', [ReservationController::class, 'searchCities']);
+    // Recherche de vols
     Route::get('/flights', [ReservationController::class, 'showSearchForm'])->name('flights.form');
     Route::get('/flights/search', [ReservationController::class, 'searchFlights'])->name('flights.search');
-    Route::get('/reservations/search', [ReservationController::class, 'search'])->name('reservations.search');
-    Route::get('/api/search-cities', [ReservationController::class, 'searchCities']);
-   Route::post('/reservations/searchs', [ReservationController::class, 'search'])->name('reservations.search.post');
-   Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index');
-   Route::get('/api/cities', [HotelController::class, 'searchCities'])->name('api.cities');
 
-    // Gestion des utilisateurs
-
-    // Route pour afficher le formulaire de l'utiisateur
-    Route::get('/user', function () {
-        return view('users.form'); // Charge la vue du formulaire.
-    });
-    
-
-// Route pour rediriger vers le formulaire de l'utilisateur
-Route::post('/user', function () {
-    // Traitement des données du formulaire
-    return back()->with('success', 'Création avec success');
-});
-Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
-
-// Route pour enregistrer les données de la réservation
-Route::post('/reservations/store', [ReservationController::class, 'store'])->name('reservations.store');
-Route::get('/hotels/search', [HotelController::class, 'showHotelSearchForm'])->name('hotels.search.form');
-Route::post('/hotel/search', [HotelController::class, 'searchHotels'])->name('hotels.search');
-Route::get('/dashboards', [DashboardController::class, 'index'])->name('dashboard.index');
-
+    // Gestion des hôtels
+    Route::get('/hotels', [HotelController::class, 'index'])->name('hotels.index');
+    Route::get('/hotels/search', [HotelController::class, 'showHotelSearchForm'])->name('hotels.search.form');
+    Route::post('/hotel/search', [HotelController::class, 'searchHotels'])->name('hotels.search');
+    Route::get('/api/cities', [HotelController::class, 'searchCities'])->name('api.cities');
+ 
 });
 
 require __DIR__.'/auth.php';

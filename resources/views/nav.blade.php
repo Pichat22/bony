@@ -18,7 +18,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         <li class="nav-item mr-3">
-          <a class="nav-link active text-warning" aria-current="page" href="#">Accueil</a>
+          <a class="nav-link active text-warning" aria-current="page" href="{{route('dashboard.index')}}">Accueil</a>
         </li>
         <li class="nav-item mr-3">
           <a class="nav-link active text-warning" href="{{route('flights.form')}}">Reservation</a>

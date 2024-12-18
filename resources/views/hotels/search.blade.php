@@ -3,22 +3,27 @@
 @section('content')
 <div class="container my-5">
     <div class="card shadow-lg">
+        <!-- En-tête avec le titre -->
         <div class="card-header bg-warning text-white text-center">
             <h2>Rechercher un Hôtel</h2>
         </div>
+
+        <!-- Corps du formulaire -->
         <div class="card-body">
             @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
+            <!-- Formulaire -->
             <form method="POST" action="{{ route('hotels.search') }}" class="needs-validation" novalidate>
                 @csrf
+
                 <!-- Recherche Ville -->
                 <div class="form-group mb-4 position-relative">
                     <label for="city_input" class="fw-bold">Ville</label>
@@ -27,24 +32,28 @@
                     <ul class="list-group position-absolute w-100" id="city_suggestions" style="z-index: 1000;"></ul>
                 </div>
 
-                <!-- Dates -->
+                <!-- Date d'Arrivée -->
                 <div class="form-group mb-4">
                     <label for="check_in_date" class="fw-bold">Date d'Arrivée</label>
                     <input type="date" class="form-control" id="check_in_date" name="check_in_date" required>
                     <div class="invalid-feedback">Veuillez sélectionner une date d'arrivée valide.</div>
                 </div>
+
+                <!-- Date de Départ -->
                 <div class="form-group mb-4">
                     <label for="check_out_date" class="fw-bold">Date de Départ</label>
                     <input type="date" class="form-control" id="check_out_date" name="check_out_date" required>
                     <div class="invalid-feedback">Veuillez sélectionner une date de départ valide.</div>
                 </div>
 
+                <!-- Bouton Rechercher -->
                 <button type="submit" class="btn btn-warning btn-lg w-100">Rechercher</button>
             </form>
         </div>
     </div>
 </div>
 
+<!-- Script JavaScript pour la recherche de villes -->
 <script>
     let debounceTimeout;
 
@@ -65,7 +74,7 @@
                         return;
                     }
 
-                    // Affiche les résultats
+                    // Affiche les suggestions
                     data.data.forEach(city => {
                         const li = document.createElement('li');
                         li.classList.add('list-group-item');

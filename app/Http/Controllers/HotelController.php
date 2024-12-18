@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Hotel;
 use Illuminate\Http\Request;
 use App\Services\AmadeusService;
+use Illuminate\Pagination\LengthAwarePaginator;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Collection;
 class HotelController extends Controller
 {
     /**
@@ -145,36 +148,42 @@ public function showHotelSearchForm()
 private $amadeusService;
 
 
-
 public function searchHotels(Request $request, AmadeusService $amadeusService)
 {
-    // Validation des données de recherche
     $request->validate([
         'city_code' => 'required|string',
-        'check_in_date' => 'required|date|after:today',
-        'check_out_date' => 'required|date|after:check_in_date',
     ]);
 
-    // Logs pour inspecter les données envoyées
+    // Log pour débogage
     \Log::info('Search request data', $request->all());
 
-    // Appel à l'API Amadeus
-    $hotels = $amadeusService->searchHotels(
-        $request->input('city_code'),
-        $request->input('check_in_date'),
-        $request->input('check_out_date')
-    );
+    $hotels = $amadeusService->searchHotels($request->input('city_code'));
 
-    // Gestion des erreurs retournées par Amadeus
+    // Gestion des erreurs
     if (isset($hotels['error'])) {
         return back()->withErrors(['error' => $hotels['error']]);
     }
 
-    return view('hotels.index', ['hotels' => $hotels['data'] ?? []]);
+    if (empty($hotels['data'])) {
+        return back()->withErrors(['error' => 'Aucun hôtel trouvé pour cette ville.']);
+    }
+
+    // Pagination des résultats
+    $currentPage = LengthAwarePaginator::resolveCurrentPage();
+    $perPage = 8; // Nombre d'hôtels par page
+    $hotelsCollection = collect($hotels['data']);
+    $currentPageItems = $hotelsCollection->slice(($currentPage - 1) * $perPage, $perPage)->all();
+
+    $paginatedHotels = new LengthAwarePaginator(
+        $currentPageItems,
+        $hotelsCollection->count(),
+        $perPage,
+        $currentPage,
+        ['path' => LengthAwarePaginator::resolveCurrentPath()]
+    );
+
+    return view('hotels.hoteldispos', ['hotels' => $paginatedHotels]);
 }
-
-
-
 
 
 

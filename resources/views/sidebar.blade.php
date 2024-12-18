@@ -29,9 +29,9 @@
                 <span>Paramètres</span>
             </a>
             <li class="nav-item mb-2">
-            <a href="/user" class="nav-link text-white d-flex align-items-center">
+            <a href="{{ route('users.index') }}" class="nav-link text-white d-flex align-items-center">
             <i class="bi bi-person me-2"></i>
-                <span>Créer Utilisateur</span>
+                <span>Utilisateur</span>
             </a>
         </li>
         </li>

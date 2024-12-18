@@ -151,7 +151,7 @@ public function getAirlineName($airlineCode)
     });
 }
 
-public function searchHotels($cityCode, $checkInDate, $checkOutDate)
+public function searchHotels($cityCode)
 {
     $token = $this->getAccessToken();
 
@@ -160,23 +160,17 @@ public function searchHotels($cityCode, $checkInDate, $checkOutDate)
     }
 
     try {
-        $response = Http::withOptions(['verify' => false]) // Désactive la vérification SSL pour l'environnement de test
+        $response = Http::withOptions(['verify' => false])
             ->withHeaders(['Authorization' => "Bearer {$token}"])
-            ->get('https://test.api.amadeus.com/v2/shopping/hotel-offers', [
-                'cityCode' => $cityCode,
-                'checkInDate' => $checkInDate,
-                'checkOutDate' => $checkOutDate,
-                'adults' => 1, // Nombre d'adultes
-                'radius' => 50, // Rayon autour de la ville
-                'radiusUnit' => 'KM',
+            ->get('https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-city', [
+                'cityCode' => $cityCode
             ]);
 
-        $data = json_decode($response->getBody()->getContents(), true);
+        $data = $response->json();
 
-        // Ajout de logs pour déboguer les erreurs
+        // Log pour debug
         \Log::info('Response from Amadeus API', ['response' => $data]);
 
-        // Vérification des erreurs dans la réponse
         if (isset($data['errors'])) {
             return ['error' => $data['errors'][0]['detail'] ?? 'Unknown error occurred'];
         }
@@ -187,6 +181,7 @@ public function searchHotels($cityCode, $checkInDate, $checkOutDate)
         return ['error' => 'Server error occurred: ' . $e->getMessage()];
     }
 }
+
 
 
 
