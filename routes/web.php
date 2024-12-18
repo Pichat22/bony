@@ -28,15 +28,24 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 // Routes accessibles pour les utilisateurs authentifiés
 Route::middleware('auth')->group(function () {
-    // Dashboard utilisateur connecté
-    Route::get('/dashboard', function () {
-        $user = Auth::user();
-
-        // Récupérer les réservations de l'utilisateur connecté
-        $userReservations = \App\Models\Reservation::where('user_id', $user->id)->get();
-
-        return view('dashboard', compact('userReservations'));
-    })->middleware(['auth', 'verified'])->name('dashboard');
+    
+  // Dashboard utilisateur connecté
+        Route::get('/dashboard', function () {
+            $user = Auth::user();
+    
+            // Récupérer les réservations de l'utilisateur connecté
+            $hotelReservations = \App\Models\Reservation::where('user_id', $user->id)
+                ->where('type_reservation', 'hotel')
+                ->get();
+    
+            $flightReservations = \App\Models\Reservation::where('user_id', $user->id)
+                ->where('type_reservation', 'billet')
+                ->get();
+    
+            return view('dashboard', compact('hotelReservations', 'flightReservations'));
+        })->middleware(['auth', 'verified'])->name('dashboard');
+  
+    
 
     // Gestion du profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -59,7 +68,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/hotels/search', [HotelController::class, 'showHotelSearchForm'])->name('hotels.search.form');
     Route::post('/hotel/search', [HotelController::class, 'searchHotels'])->name('hotels.search');
     Route::get('/api/cities', [HotelController::class, 'searchCities'])->name('api.cities');
- 
+    Route::get('/reservations/hotel/create', [ReservationController::class, 'createHotelReservation'])->name('reservations.create.hotel');
+    Route::post('/reservations/hotel/store', [ReservationController::class, 'storeHotelReservation'])->name('reservations.store.hotel');
+    
 });
 
 require __DIR__.'/auth.php';

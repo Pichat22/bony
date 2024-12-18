@@ -24,7 +24,7 @@
           <a class="nav-link active text-warning" href="{{route('flights.form')}}">Reservation</a>
         </li>
         <li class="nav-item mr-3">
-          <a class="nav-link active text-warning" href="{{route('hotels.index')}}">Hotel</a>
+          <a class="nav-link active text-warning" href="{{route('dashboard')}}">Hotel</a>
         </li>
         <li class="nav-item mr-3">
           <a class="nav-link active text-warning " href="#" aria-disabled="true">Contactez-nous</a>

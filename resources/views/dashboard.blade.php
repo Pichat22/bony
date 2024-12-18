@@ -2,54 +2,142 @@
 
 @section('content')
 <div class="container my-5">
-    <h1 class="text-center text-warning mb-4">Tableau de Bord</h1>
-    <h4 class="text-center text-secondary mb-5">Réservations faites par <span class="fw-bold text-dark">{{ Auth::user()->name }}</span></h4>
+    <h1 class="text-center mb-4 text-uppercase text-primary">Tableau de Bord</h1>
 
-    <h3 class="mb-4 text-secondary">Vos Réservations</h3>
-    <div class="card shadow-lg border-0">
+    <!-- Message de succès -->
+    @if(session()->has('message'))
+        <div class="alert alert-success">
+            {{ session()->get('message') }}
+        </div>
+    @endif
+
+    <!-- Actions -->
+    <div class="d-flex justify-content-between mb-4">
+              <!-- affocher user conceter  -->
+            
+        <div>
+            <a href="{{ route('hotels.search.form') }}" class="btn btn-warning text-white">
+                <i class="bi bi-search"></i> Rechercher un Hôtel
+            </a>
+            <a href="{{ route('flights.search') }}" class="btn btn-info text-white">
+                <i class="bi bi-search"></i> Rechercher un Billet
+            </a>
+        </div>
+    </div>
+
+    <!-- Réservations d'Hôtels -->
+    <div class="card shadow-sm mb-5">
         <div class="card-header bg-warning text-white">
-            <h4 class="text-center">Détail de vos Réservations</h4>
+            <h2 class="mb-0">Réservations d'Hôtels</h2>
         </div>
         <div class="card-body">
-            @if ($userReservations->isEmpty())
-                <div class="alert alert-info text-center" role="alert">
-                    <strong>Pas de réservations trouvées.</strong> Vous n'avez effectué aucune réservation pour le moment.
-                </div>
-            @else
+            @if ($hotelReservations->count() > 0)
                 <div class="table-responsive">
-                    <table class="table table-hover table-striped">
-                        <thead class="bg-light">
-                            <tr class="text-center">
+                    <table class="table table-striped table-bordered">
+                        <thead class="bg-warning text-white">
+                            <tr>
                                 <th>#</th>
-                                <th>Compagnie</th>
-                                <th>Origine</th>
-                                <th>Destination</th>
-                                <th>Date de Départ</th>
-                                <th>Date d'Arrivée</th>
-                                <th>Prix (€)</th>
+                                <th>Date</th>
+                                <th>Nom Hôtel</th>
+                                <th>Ville</th>
+                                <th>Prix</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($userReservations as $reservation)
-                                <tr class="text-center">
-                                    <td class="align-middle">{{ $loop->iteration }}</td>
-                                    <td class="align-middle">{{ $reservation->compagnie }}</td>
-                                    <td class="align-middle">{{ $reservation->origine }}</td>
-                                    <td class="align-middle">{{ $reservation->destination }}</td>
-                                    <td class="align-middle">{{ \Carbon\Carbon::parse($reservation->heure_depart)->format('d/m/Y H:i') }}</td>
-                                    <td class="align-middle">{{ \Carbon\Carbon::parse($reservation->heure_arrivee)->format('d/m/Y H:i') }}</td>
-                                    <td class="align-middle text-success fw-bold">{{ number_format($reservation->prix, 2, ',', ' ') }}</td>
+                            @foreach($hotelReservations as $reservation)
+                                <tr>
+                                    <td>{{ $reservation->id }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($reservation->date)->format('d/m/Y') }}</td>
+                                    <td>{{ $reservation->nom_hotel }}</td>
+                                    <td>{{ $reservation->ville_hotel }}</td>
+                                    <td>{{ number_format($reservation->prix, 2, ',', ' ') }} €</td>
+                                    <td>
+                                        <span class="badge 
+                                            {{ $reservation->statut === 'confirmée' ? 'bg-success' : ($reservation->statut === 'annulée' ? 'bg-danger' : 'bg-warning text-dark') }}">
+                                            {{ ucfirst($reservation->statut) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('reservations.show', $reservation->id) }}" class="btn btn-success btn-sm">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                        <a href="{{ route('reservations.edit', $reservation->id) }}" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
+            @else
+                <p class="text-muted">Aucune réservation d'hôtel trouvée.</p>
             @endif
         </div>
-        <div class="card-footer bg-light text-center">
-            <a href="{{ route('flights.search') }}" class="btn btn-warning btn-lg">
-                <i class="bi bi-plus-circle"></i> Faire une Nouvelle Réservation
-            </a>
+    </div>
+
+    <!-- Réservations de Billets -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Réservations de Billets</h2>
+        </div>
+        <div class="card-body">
+            @if ($flightReservations->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th>#</th>
+                                <th>Date</th>
+                                <th>Compagnie</th>
+                                <th>Origine</th>
+                                <th>Destination</th>
+                                <th>Départ</th>
+                                <th>Arrivée</th>
+                                <th>Prix</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($flightReservations as $reservation)
+                                <tr>
+                                    <td>{{ $reservation->id }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($reservation->date)->format('d/m/Y') }}</td>
+                                    <td>{{ $reservation->compagnie }}</td>
+                                    <td>{{ $reservation->origine }}</td>
+                                    <td>{{ $reservation->destination }}</td>
+                                    <td class="text-center">
+                                        {{ $reservation->heure_depart ? \Carbon\Carbon::parse($reservation->heure_depart)->format('H:i - d/m/Y') : 'N/A' }}
+                                    </td>
+                                    <td class="text-center">
+                                        {{ $reservation->heure_arrivee ? \Carbon\Carbon::parse($reservation->heure_arrivee)->format('H:i - d/m/Y') : 'N/A' }}
+                                    </td>
+                                    <td>{{ number_format($reservation->prix, 2, ',', ' ') }} €</td>
+                                    <td>
+                                        <span class="badge 
+                                            {{ $reservation->statut === 'confirmée' ? 'bg-success' : ($reservation->statut === 'annulée' ? 'bg-danger' : 'bg-warning text-dark') }}">
+                                            {{ ucfirst($reservation->statut) }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('reservations.show', $reservation->id) }}" class="btn btn-success btn-sm">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                        <a href="{{ route('reservations.edit', $reservation->id) }}" class="btn btn-warning btn-sm">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @else
+                <p class="text-muted">Aucune réservation de billet trouvée.</p>
+            @endif
         </div>
     </div>
 </div>

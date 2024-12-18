@@ -89,10 +89,11 @@
 
                                 <!-- Bouton Réserver -->
                                 <div class="card-footer bg-white text-center">
-                                    <a href="{{ route('reservations.create', ['hotelId' => $hotel['hotelId']]) }}" 
-                                       class="btn btn-warning btn-sm fw-bold text-white">
-                                        <i class="bi bi-cart-fill"></i> Réserver
-                                    </a>
+                                    <a href="{{ route('reservations.create.hotel', ['hotel' => json_encode($hotel)]) }}" 
+                                        class="btn btn-warning btn-sm fw-bold text-white">
+                                         <i class="bi bi-cart-fill"></i> Réserver
+                                     </a>
+                                     
                                 </div>
                             </div>
                         </div>

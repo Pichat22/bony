@@ -266,6 +266,42 @@ public function indexAdmin()
 
 
 
-
+    public function createHotelReservation(Request $request)
+    {
+        $hotel = json_decode($request->input('hotel'), true);
+    
+        return view('reservations.hotel', compact('hotel'));
+    }
+    
+    public function storeHotelReservation(Request $request)
+    {
+        $request->validate([
+            'nom_hotel' => 'required|string',
+            'ville_hotel' => 'required|string',
+            'date_arrivee' => 'required|date|after:today',
+            'date_depart' => 'required|date|after:date_arrivee',
+            'prix' => 'required|numeric',
+            'nombre_chambres' => 'required|integer|min:1',
+            'client.nom' => 'required|string',
+            'client.prenom' => 'required|string',
+            'client.telephone' => 'required|string',
+        ]);
+    
+        Reservation::create([
+            'type_reservation' => 'hotel',
+            'nom_hotel' => $request->input('nom_hotel'),
+            'ville_hotel' => $request->input('ville_hotel'),
+            'date_arrivee' => $request->input('date_arrivee'),
+            'date_depart' => $request->input('date_depart'),
+            'prix' => $request->input('prix'),
+            'nombre_places' => $request->input('nombre_chambres'),
+            'passagers' => json_encode([$request->input('client')]),
+            'user_id' => auth()->id(),
+            'statut' => 'en attente',
+            'date' => now()->format('Y-m-d'), 
+        ]);
+    
+        return redirect()->route('dashboard')->with('success', 'Réservation d\'hôtel enregistrée avec succès.');
+    }
 
 }
