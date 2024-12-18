@@ -82,7 +82,7 @@ class ReservationController extends Controller
         Reservation::create([
             'type_reservation' => 'billet',
             'date' => now(),
-            'statut' => 'en attente',
+            'statut' => 'confirmée',
             'user_id' => auth()->id(),
             'compagnie' => $request->input('compagnie'),
             'origine' => $request->input('origine'),
@@ -300,7 +300,7 @@ public function indexAdmin()
             'nombre_places' => $request->input('nombre_chambres'),
             'passagers' => json_encode([$request->input('client')]),
             'user_id' => auth()->id(),
-            'statut' => 'en attente',
+            'statut' => 'confirmée',
             'date' => now()->format('Y-m-d'), 
         ]);
     
