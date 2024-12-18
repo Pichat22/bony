@@ -41,7 +41,7 @@
 <div class="container my-5">
     <div class="card shadow-lg border-0">
         <!-- En-tête avec le titre -->
-        <div class="card-header bg-gradient bg-wirning text-white text-center">
+        <div class="card-header bg-gradient bg-warning text-white text-center">
             <h2 class="fw-bold mb-0">Hôtels Disponibles</h2>
         </div>
 
